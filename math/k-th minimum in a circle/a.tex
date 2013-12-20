@@ -1,0 +1,143 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{xeCJK}
+\usepackage{xunicode}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{geometry}
+
+\setCJKmainfont{黑体} 
+\setCJKsansfont{黑体}
+\setCJKmonofont{黑体}
+
+\begin{document}
+
+\title{k-th minimum in a circle}
+\author{lovezzt}
+\date{\today}
+\maketitle
+
+\section{problem}
+$n$个随机变量 $x_1, x_2, \dots, x_n$ , $x_i$ 在$\left[0,1\right]$ 上面均匀分布，并且满足 $\sum_{i=1}^{n} x_i = 1$ 询问 $x_i$
+中第 $k$ 小的数的期望。
+
+\section{solutin}
+一般考虑第$k$的问题，我们都从简单考虑，即先从最小考虑，再从$k$小考虑，所以我们分$2$部分处理。
+
+\subsection{求最小值的期望}
+对于概率论的题目，我们首先要设事件，如果不设时间茫然去做的话，一定会悲剧的。\\
+所以我们设 
+\[
+	A: \sum_{i=1}^{n} x_i = 1
+\]	
+
+\[
+	B: \min_{i=1}^{n} x_i = x
+\]	
+
+并且设$f(n,x)$为最小值为x的概率密度函数。
+可以知道
+\[
+	f(n,x)=f\lbrace B|A \rbrace=\frac{f\lbrace AB \rbrace}{f \lbrace A \rbrace}
+\]
+下面我们的目标就是计算$f\lbrace AB \rbrace$和$f \lbrace A \rbrace$。
+\subsubsection{$f\lbrace A \rbrace$}
+首先由于$x_i$ 在$\left[0,1\right]$上均匀分布，所以
+\[
+	f\lbrace x_i=x \rbrace = 1
+\]
+所以\\
+设$s_i=\sum_{j=1}^{i} x_j$ \\
+$$
+\begin{array}{rl}
+		& f\lbrace A \rbrace  \\
+	=	& \int_{0}^{1} \int_{0}^{1-s_1} \dots \int_{0}^{1-s_{n-2}} dx_{n-1} \dots dx_2 dx_1 \\
+	= 	& \int_{0}^{1} \int_{0}^{1-s_1} \dots \int_{0}^{1-s_{n-3}} 1-s_{n-2} dx_{n-2} \dots dx_2 dx_1 \\
+	=  	& \int_{0}^{1} \int_{0}^{1-s_1} \dots \int_{0}^{1-s_{n-4}} \frac{1}{2} (1-s_{n-3})^{2} dx_{n-3} \dots dx_2 dx_1 \\
+	=	& \int_{0}^{1} \int_{0}^{1-s_1} \dots \int_{0}^{1-s_{n-5}} \frac{1}{6} (1-s_{n-4})^{2} dx_{n-4} \dots dx_2 dx_1 \\
+	=	& \int_{0}^{1} \frac{1}{(n-2)!} (1-x_1)^{n-2} dx_1 \\ 
+	=	& \frac{1}{(n-1)!}
+\end{array}
+$$
+
+\subsubsection{$f \lbrace AB \rbrace$}
+根据全概率公式
+设最小值是$y$
+\[
+	f\lbrace AB \rbrace = \sum_{i=1}^{n} f\lbrace AB|(x_i=x) \rbrace 
+\]
+我们不妨计算$x_n$
+设
+\[
+	C:AB|(x_n=x)
+\]
+$$
+\begin{array}{rl}
+		& f\lbrace C \rbrace  \\
+	=	& \int_{0}^{1-nx} \int_{0}^{1-nx-s_1} \dots \int_{0}^{1-nx-s_{n-3}} dx_{n-2} \dots dx_2 dx_1 \\
+	= 	& \int_{0}^{1-nx} \int_{0}^{1-nx-s_1} \dots \int_{0}^{1-nx-s_{n-4}} 1-nx-s_{n-3} dx_{n-3} \dots dx_2 dx_1 \\
+	=  	& \int_{0}^{1-nx} \int_{0}^{1-nx-s_1} \dots \int_{0}^{1-nx-s_{n-5}} \frac{1}{2} (1-nx-s_{n-4})^{2} dx_{n-4} \dots dx_2 dx_1 \\
+	=	& \int_{0}^{1-nx} \int_{0}^{1-nx-s_1} \dots \int_{0}^{1-nx-s_{n-6}} \frac{1}{6} (1-nx-s_{n-5})^{2} dx_{n-5} \dots dx_2 dx_1 \\
+	=	& \int_{0}^{1-nx} \frac{1}{(n-3)!} (1-x_1)^{n-3} dx_1 \\ 
+	=	& \frac{1}{(n-2)!}(1-nx)^{n-2}
+\end{array}
+$$	
+所以可以得到
+\[
+	f\lbrace AB \rbrace = \frac{n}{(n-2)!}(1-nx)^{n-2}
+\]
+
+\subsubsection{$f(n,x)$}
+\[
+	f(n,x)=f\lbrace B|A \rbrace=\frac{f\lbrace AB \rbrace}{f \lbrace A \rbrace}=n(n-1)(1-nx)^{n-2}
+\]
+
+\subsubsection{求期望}
+设$g(n,1)$为$n$个随机变量最小值的期望。
+$$
+\begin{array}{rl}
+	& g(n,1) \\
+=	& \int_{0}^{\frac{1}{n}} xn(n-1)(1-nx)^{n-2} dx \\
+=	& n(n-1)\int_{0}^{\frac{1}{n}} x(1-nx)^{n-2} dx \\
+=	& (n-1) \int_{0}^{\frac{1}{n}} x(1-nx)^{n-2} dnx \\
+=	& \frac{n-1}{n} \int_{0}^{\frac{1}{n}} nx(1-nx)^{n-2} dnx \\
+=	& \frac{n-1}{n} \int_{0}^{1} u(1-u)^{n-2} du \\
+=	& \frac{n-1}{n} \int_{0}^{1} (1-u)u^{n-2} du \\
+=	& \frac{1}{n^2}  
+\end{array}
+$$
+
+\subsection{求第k小值的期望}
+我们设$g(n,k)$为$n$个数的第$k$小的期望。
+求这个值时候我们可以考虑枚举最小值$x$，那么剩下$n-1$个数的和为$1-nx$。
+那么在最小值为$x$的条件下，第k小期望为$g(n-1,k-1)(1-nx)+x$。
+根据全概率公式我们可以得到
+$$
+\begin{array}{rl}
+	& g(n,k) \\
+=	& \int_{0}^{\frac{1}{n}} \left[ (1-nx)g(n-1,k-1)+x \right] f(n,x) dx \\
+=	& \int_{0}^{\frac{1}{n}} xf(n,k) dx + g(n-1,k-1) \int_{0}^{\frac{1}{n}}(1-nx)f(n,x) dx \\
+=	& \frac{1}{n^2} + g(n-1,k-1)n(n-1) \int_{0}^{\frac{1}{n}} (1-nx)^{n-1} dx \\
+=	& \frac{1}{n^2} + g(n-1,k-1)(n-1) \\
+\end{array}
+$$
+
+由上面可知
+\[
+	g(n-k+1,1) = \frac{1}{(n-k+1)^2}
+\]
+所以
+\[
+	g(n,k)n = \sum_{i=n-k+1}^{n} \frac{1}{i} 
+\]
+\[
+	g(n,k) = \frac{1}{n} \sum_{i=n-k+1}^{n} \frac{1}{i} = \frac{H_n-H_{n-k}}{n}
+\]
+这样这个题可以$o(n)$预处理加上$o(1)$输出答案。
+
+\section{感想}
+对于概率论的题目，一定要把事件清晰地设出来，求概率密度时一定要明确自己求的是什么事件的概率密度;
+巧妙运用全概率公式、贝叶斯公式等将不好算的东西装话成好算的;
+对于概率题目的每一步推导，一定要清晰地分析他的理论依据。
+
+\end{document}
